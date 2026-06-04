@@ -51,10 +51,17 @@ After Cell 4 runs, the notebook will display the config for `opencode.json`:
 
 ```json
 {
-  "endpoint": "https://something.trycloudflare.com/v1",
-  "model": "qwen2.5-coder:7b",
-  "api_key": "",
-  "provider": "openai"
+  "$schema": "https://opencode.ai/config.json",
+  "model": "ollama/qwen2.5-coder:7b",
+  "provider": {
+    "ollama": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ollama (Colab)",
+      "options": {
+        "baseURL": "https://something.trycloudflare.com/v1"
+      }
+    }
+  }
 }
 ```
 
@@ -65,6 +72,7 @@ opencode "refactor function calculateTotal"
 ```
 
 > **Important:** Cell 4's tunnel must stay running for opencode to connect.
+> **Tip:** Run `/models` in opencode to see all available models from Colab.
 
 ---
 
