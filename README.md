@@ -72,12 +72,15 @@ opencode "refactor function calculateTotal"
 
 | Model | Size | Best For |
 |-------|------|----------|
-| `qwen2.5-coder:7b` | 4.5 GB | Coding, debugging (default) |
-| `qwen2.5-coder:14b` | 8.9 GB | **Vibe coding**, advanced code generation |
+| `qwen2.5-coder:7b` | 4.7 GB | Coding, debugging (default) |
+| `qwen2.5-coder:14b` | 9.0 GB | **Vibe coding**, advanced code generation |
+| `huihui_ai/qwen2.5-coder-abliterate:14b-instruct-q4_k_m` | 9.0 GB | Uncensored coding (abliterated) |
+| `supergoatscriptguy/mythos-sec:24b` | 14 GB | Pentest/CTF/bug bounty uncensored |
+| `dolphin-llama3:8b` | 4.7 GB | Uncensored general/agentic, function calling |
 | `deepseek-coder:14b` | 8.5 GB | **Vibe coding**, reasoning + coding hybrid |
-| `deepseek-r1:7b` | 4.5 GB | Deep reasoning, chain-of-thought |
-| `gemma4:12b` | — | **Vibe coding**, multimodal, instruction following |
-| `llama3.1:8b` | 5 GB | General chat, virtual assistant |
+| `deepseek-r1:7b` | 4.7 GB | Deep reasoning, chain-of-thought |
+| `gemma4:12b` | 6.6 GB | **Vibe coding**, multimodal, instruction following |
+| `llama3.1:8b` | 4.9 GB | General chat, virtual assistant |
 
 > **Vibe coding:** 14B models deliver significantly better output quality for complex code generation, refactoring, and debugging — ideal for pairing with opencode CLI. Make sure to use GPU T4 runtime (sufficient for 14B with quantization).
 
