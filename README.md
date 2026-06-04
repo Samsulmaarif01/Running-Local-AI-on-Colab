@@ -1,53 +1,53 @@
 # Running Local AI on Colab
 
-Jalankan **Ollama + Open WebUI** di Google Colab secara gratis, akses dari mana saja via Cloudflare Tunnel, dan integrasikan dengan **opencode CLI** sebagai AI coding assistant.
+Run **Ollama + Open WebUI** on Google Colab for free, access from anywhere via Cloudflare Tunnel, and integrate with **opencode CLI** as your AI coding assistant.
 
 ---
 
-## Fitur
+## Features
 
-- **Ollama** — Jalankan model AI lokal (Qwen2.5-Coder, Llama 3.1, DeepSeek-R1, dll) di GPU Colab (T4)
-- **Open WebUI** — Antarmuka web ChatGPT-like untuk chatting dengan model
-- **Cloudflare Tunnel** — Akses publik tanpa registrasi, tanpa port forwarding, tanpa config DNS
-- **Model Persistence** — Model otomatis tersimpan ke Google Drive agar tidak download ulang tiap sesi
-- **opencode CLI Ready** — Tunnel API Ollama bisa langsung dipakai opencode sebagai provider AI
+- **Ollama** — Run local AI models (Qwen2.5-Coder, Llama 3.1, DeepSeek-R1, Gemma 4, etc.) on Colab's GPU (T4)
+- **Open WebUI** — ChatGPT-like web interface for chatting with models
+- **Cloudflare Tunnel** — Public access without registration, port forwarding, or DNS config
+- **Model Persistence** — Models auto-save to Google Drive so you don't re-download every session
+- **opencode CLI Ready** — Ollama API tunnel works directly with opencode as your AI provider
 
 ---
 
-## Cara Pakai
+## Usage
 
-### 1. Buka di Google Colab
+### 1. Open in Google Colab
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/[username]/[repo]/blob/main/Colab_Ai.ipynb)
 
-Atau upload manual `Colab_Ai.ipynb` ke [Google Colab](https://colab.research.google.com).
+Or manually upload `Colab_Ai.ipynb` to [Google Colab](https://colab.research.google.com).
 
-### 2. Jalankan Notebook
+### 2. Run the Notebook
 
-Jalankan 4 sel secara berurutan:
+Execute the 4 cells in order:
 
-| Sel | Fungsi | Durasi |
-|-----|--------|--------|
-| **Sel 1** | Install dependency (Ollama, Open WebUI, cloudflared) | ~2-3 menit |
-| **Sel 2** | Mount Drive, restore/download model, jalankan Ollama | ~5-15 menit (tergantung model) |
-| **Sel 3** | Start Open WebUI + Cloudflare Tunnel (link publik) | ~2-3 menit |
-| **Sel 4** | Tunnel API Ollama + tampilkan config opencode | ~30 detik |
+| Cell | Function | Duration |
+|------|----------|----------|
+| **Cell 1** | Install dependencies (Ollama, Open WebUI, cloudflared) | ~2-3 min |
+| **Cell 2** | Mount Drive, restore/download model, start Ollama | ~5-15 min (depends on model) |
+| **Cell 3** | Start Open WebUI + Cloudflare Tunnel (public link) | ~2-3 min |
+| **Cell 4** | Ollama API tunnel + display opencode config | ~30 sec |
 
-> **Catatan:** Sel 3 dan 4 harus tetap berjalan — jangan matikan selnya selama masih dipakai.
+> **Note:** Cells 3 and 4 must keep running — don't stop them while in use.
 
-### 3. Buka Open WebUI
+### 3. Open Open WebUI
 
-Setelah Sel 3 selesai, akan muncul URL seperti:
+After Cell 3 completes, a URL like this will appear:
 ```
 https://something.trycloudflare.com
 ```
-Klik link tersebut untuk membuka Open WebUI di browser.
+Click the link to open Open WebUI in your browser.
 
 ---
 
-## Integrasi dengan opencode CLI
+## opencode CLI Integration
 
-Setelah Sel 4 jalan, notebook akan menampilkan config untuk `opencode.json`:
+After Cell 4 runs, the notebook will display the config for `opencode.json`:
 
 ```json
 {
@@ -58,34 +58,34 @@ Setelah Sel 4 jalan, notebook akan menampilkan config untuk `opencode.json`:
 }
 ```
 
-Simpan sebagai `opencode.json` di root project Anda, lalu:
+Save it as `opencode.json` in your project root, then:
 
 ```bash
 opencode "refactor function calculateTotal"
 ```
 
-> **Penting:** Tunnel Sel 4 harus tetap running agar opencode bisa terhubung.
+> **Important:** Cell 4's tunnel must stay running for opencode to connect.
 
 ---
 
-## Model yang Didukung
+## Supported Models
 
-| Model | Ukuran | Best For |
-|-------|--------|----------|
+| Model | Size | Best For |
+|-------|------|----------|
 | `qwen2.5-coder:7b` | 4.5 GB | Coding, debugging (default) |
-| `qwen2.5-coder:14b` | 8.9 GB | **Vibe coding**, code generation tingkat lanjut |
+| `qwen2.5-coder:14b` | 8.9 GB | **Vibe coding**, advanced code generation |
 | `deepseek-coder:14b` | 8.5 GB | **Vibe coding**, reasoning + coding hybrid |
 | `deepseek-r1:7b` | 4.5 GB | Deep reasoning, chain-of-thought |
 | `gemma4:12b` | — | **Vibe coding**, multimodal, instruction following |
-| `llama3.1:8b` | 5 GB | Chat umum, asisten virtual |
+| `llama3.1:8b` | 5 GB | General chat, virtual assistant |
 
-> **Vibe coding:** Model 14B memberikan kualitas output yang jauh lebih baik untuk generate kode kompleks, refactoring, dan debugging — cocok untuk pairing dengan opencode CLI. Pastikan runtime Colab menggunakan GPU T4 (cukup untuk 14B dengan quantized).
+> **Vibe coding:** 14B models deliver significantly better output quality for complex code generation, refactoring, and debugging — ideal for pairing with opencode CLI. Make sure to use GPU T4 runtime (sufficient for 14B with quantization).
 
-Edit variabel `MODEL` di Sel 2 untuk mengganti model.
+Edit the `MODEL` variable in Cell 2 to switch models.
 
 ---
 
-## Arsitektur
+## Architecture
 
 ```
 ┌──────────────────────────────────────────────┐
@@ -119,24 +119,24 @@ Edit variabel `MODEL` di Sel 2 untuk mengganti model.
 
 ---
 
-## Catatan Penting
+## Important Notes
 
-- **GPU:** Colab free tier memberikan T4/NVIDIA GPU. Jika habis kuota, bisa pake runtime CPU (lambat).
-- **Sesi:** Colab akan disconnect setelah idle ~90 menit. Jalankan ulang Sel 2→3→4 setelah reconnect.
-- **Keamanan:** URL tunnel bersifat **public**. Siapa pun yang tahu URL bisa mengakses API Ollama Anda. Jangan bagikan.
-- **Biaya:** Free tier Colab sudah cukup. Colab Pro/Pro+ memberi akses GPU prioritas & V100/A100.
+- **GPU:** Colab free tier provides a T4/NVIDIA GPU. If quota runs out, you can use CPU runtime (slow).
+- **Session:** Colab disconnects after ~90 minutes of idle. Re-run Cells 2→3→4 after reconnecting.
+- **Security:** The tunnel URL is **public**. Anyone with the URL can access your Ollama API. Keep it private.
+- **Cost:** Colab free tier is sufficient. Colab Pro/Pro+ gives priority GPU access & V100/A100.
 
 ---
 
 ## Troubleshooting
 
-| Masalah | Solusi |
-|---------|--------|
-| `fuser: command not found` | Sudah di-fix — fallback ke `lsof` atau `ss` |
-| Model download gagal | Coba ganti model yang lebih kecil, atau restart session |
-| WebUI tidak bisa diakses | Pastikan Sel 3 masih running, cek URL tunnel |
-| opencode connection refused | Tunnel Sel 4 harus aktif, pastikan endpoint pakai `/v1` |
-| Drive not mounted | Izinkan akses Drive saat prompt muncul |
+| Issue | Solution |
+|-------|----------|
+| `fuser: command not found` | Already fixed — falls back to `lsof` or `ss` |
+| Model download fails | Try a smaller model, or restart the session |
+| WebUI inaccessible | Make sure Cell 3 is running, check the tunnel URL |
+| opencode connection refused | Cell 4 tunnel must be active, endpoint must include `/v1` |
+| Drive not mounted | Grant Drive access when prompted |
 
 ---
 
