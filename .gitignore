@@ -1,0 +1,31 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# Colab checkpoints
+.ipynb_checkpoints/
+
+# Drive mount artifacts (generated during Colab session)
+.drive/
+.mount/
+
+# Model files (very large, download on-demand)
+ollama_models/
+models/
+
+# Secrets & credentials
+.env
+*.env.*
+opencode.json
+credentials.json
+token.json
+*.token
+
+# OS junk
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
