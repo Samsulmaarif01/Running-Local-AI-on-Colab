@@ -18,7 +18,7 @@ Run **Ollama + Open WebUI** on Google Colab for free, access from anywhere via C
 
 ### 1. Open in Google Colab
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/[username]/[repo]/blob/main/Colab_Ai.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Samsulmaarif01/Running-Local-AI-on-Colab/blob/main/Colab_Ai.ipynb)
 
 Or manually upload `Colab_Ai.ipynb` to [Google Colab](https://colab.research.google.com).
 
