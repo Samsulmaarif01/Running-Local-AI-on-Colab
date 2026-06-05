@@ -52,13 +52,17 @@ After Cell 4 runs, the notebook will display the config for `opencode.json`:
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "ollama/qwen2.5-coder:7b",
   "provider": {
-    "ollama": {
+    "Ollama": {
       "npm": "@ai-sdk/openai-compatible",
       "name": "Ollama (Colab)",
       "options": {
         "baseURL": "https://something.trycloudflare.com/v1"
+      },
+      "models": {
+        "QwenCoder7B": {
+          "name": "qwen2.5-coder:7b"
+        }
       }
     }
   }
