@@ -1,6 +1,6 @@
 # Running Local AI on Colab
 
-Run **Ollama + Open WebUI** on Google Colab for free, access from anywhere via ngrok, and integrate with **opencode CLI** as your AI coding assistant.
+Run **Ollama + Open WebUI** on Google Colab for free, access from anywhere via **two** Cloudflare tunnels, and integrate with **opencode CLI** / **Claude Code** / any OpenAI-compatible client.
 
 ---
 
@@ -8,9 +8,9 @@ Run **Ollama + Open WebUI** on Google Colab for free, access from anywhere via n
 
 - **Ollama** — Run local AI models (Qwen2.5-Coder, Llama 3.1, DeepSeek-R1, Gemma 4, etc.) on Colab's GPU (T4)
 - **Open WebUI** — ChatGPT-like web interface for chatting with models
-- **ngrok Tunnel** — Public access without port forwarding (free account required)
+- **Two Cloudflare Tunnels** — One for WebUI browser access, one direct to Ollama API
 - **Model Persistence** — Models auto-save to Google Drive so you don't re-download every session
-- **opencode CLI Ready** — Ollama API tunnel works directly with opencode as your AI provider
+- **opencode / Claude Code / Cline / Continue Ready** — Direct Ollama tunnel works with any OpenAI-compatible client
 
 ---
 
@@ -28,17 +28,17 @@ Execute the 3 cells in order:
 
 | Cell | Function | Duration |
 |------|----------|----------|
-| **Cell 1** | Install dependencies (Ollama, Open WebUI, pyngrok) | ~2-3 min |
+| **Cell 1** | Install dependencies (Ollama, Open WebUI, system deps) | ~2-3 min |
 | **Cell 2** | Mount Drive, restore/download model, start Ollama | ~5-15 min (depends on model) |
-| **Cell 3+4** | Start Open WebUI + ngrok tunnel (single cell) | ~2-3 min |
+| **Cell 3** | Start WebUI + **two** Cloudflare tunnels, test, print configs | ~2-3 min |
 
-> **Note:** Cell 3+4 must keep running — don't stop it while in use.
+> Cell 3 must keep running — it monitors both tunnels. All access stops if this cell is interrupted.
 
 ### 3. Open Open WebUI
 
-After Cell 3+4 runs, a URL like this will appear:
+After Cell 3 runs, a URL like this will appear:
 ```
-https://something.ngrok-free.app
+https://something.trycloudflare.com
 ```
 Click the link to open Open WebUI in your browser.
 
@@ -46,7 +46,7 @@ Click the link to open Open WebUI in your browser.
 
 ## opencode CLI Integration
 
-Cell 3+4 also displays the config for `opencode.json`:
+Cell 3 prints the config for `opencode.json` using the **direct Ollama tunnel**:
 
 ```json
 {
@@ -56,10 +56,10 @@ Cell 3+4 also displays the config for `opencode.json`:
       "npm": "@ai-sdk/openai-compatible",
       "name": "Ollama (Colab)",
       "options": {
-        "baseURL": "https://something.ngrok-free.app/ollama/v1"
+        "baseURL": "https://ollama-tunnel.trycloudflare.com/v1"
       },
       "models": {
-        "QwenCoder7B": {
+        "qwen2.5-coder:7b": {
           "name": "qwen2.5-coder:7b"
         }
       }
@@ -74,8 +74,41 @@ Save it as `opencode.json` in your project root, then:
 opencode "refactor function calculateTotal"
 ```
 
-> **Important:** The ngrok tunnel must stay running for opencode to connect.
+> **Important:** The Ollama tunnel must stay running for opencode to connect.
 > **Tip:** Run `/models` in opencode to see all available models from Colab.
+
+---
+
+## Claude Code Router Integration
+
+Cell 3 also prints config for Claude Code Router using the **WebUI tunnel** (Anthropic Messages API). Since `WEBUI_AUTH=False`, no real API key is needed:
+
+```bash
+export ANTHROPIC_BASE_URL="https://webui-tunnel.trycloudflare.com/api"
+export ANTHROPIC_API_KEY="not-needed"
+```
+
+Or add to `~/.claude/settings.json`:
+
+```json
+{
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://webui-tunnel.trycloudflare.com/api",
+    "ANTHROPIC_AUTH_TOKEN": "not-needed"
+  }
+}
+```
+
+---
+
+## Any OpenAI-Compatible Client
+
+The direct Ollama tunnel works with **any** OpenAI-compatible tool (Cline, Continue, etc.):
+
+```
+baseURL: https://ollama-tunnel.trycloudflare.com/v1
+model:   qwen2.5-coder:7b
+```
 
 ---
 
@@ -102,45 +135,48 @@ Edit the `MODEL` variable in Cell 2 to switch models.
 ## Architecture
 
 ```
-┌──────────────────────────────────────────────┐
-│                 Google Colab                  │
-│                                               │
-│  ┌──────────┐    ┌──────────────┐            │
-│  │  Ollama  │◄───│  Open WebUI  │            │
-│  │ :11434   │    │ :8081        │            │
-│  └────┬─────┘    └──────┬───────┘            │
-│       │                 │                    │
-│  ┌────▼─────────────────▼───────┐            │
-│  │       ngrok Tunnel          │            │
-│  │   (single tunnel :8081)     │            │
-│  └──────────┬──────────────────┘            │
-│             │                                │
-│  ┌──────────▼──────────┐                    │
-│  │   Google Drive      │                    │
-│  │   (model storage)   │                    │
-│  └─────────────────────┘                    │
-└──────────────┬───────────────────────────────┘
-               │
-        🌐 Public URL
-               │
-    ┌──────────┴──────────┐
-    │                     │
-┌───▼────┐         ┌─────▼─────┐
-│Browser │         │ opencode  │
-│(WebUI) │         │ CLI       │
-└────────┘         └───────────┘
+┌───────────────────────────────────────────────────┐
+│                  Google Colab                      │
+│                                                    │
+│  ┌──────────┐         ┌──────────────┐            │
+│  │  Ollama  │◄────────│  Open WebUI  │            │
+│  │ :11434   │         │ :8081        │            │
+│  └────┬─────┘         └──────┬───────┘            │
+│       │                     │                     │
+│  ┌────▼──────────┐   ┌──────▼─────────┐          │
+│  │ Tunnel A     │   │ Tunnel B       │          │
+│  │ cloudflared  │   │ cloudflared    │          │
+│  │ → Ollama     │   │ → WebUI        │          │
+│  └────┬──────────┘   └──────┬─────────┘          │
+│       │                     │                    │
+│  ┌────▼─────────────────────▼─────────┐          │
+│  │         Google Drive               │          │
+│  │       (model storage)              │          │
+│  └─────────────────────────────────────┘          │
+└───────────────────┬───────────────────────────────┘
+                    │
+         ┌──────────┴───────────────────┐
+         │                              │
+┌────────▼────────┐          ┌─────────▼──────────┐
+│ Ollama Tunnel   │          │  WebUI Tunnel      │
+│ trycloudflare   │          │  trycloudflare     │
+│                 │          │                    │
+│ opencode        │          │ Browser (WebUI)    │
+│ Cline / Continue│          │ Claude Code Router │
+│ Any OpenAI-     │          │ Anthropic API      │
+│ compatible tool │          │                    │
+└─────────────────┘          └────────────────────┘
 ```
 
-> Ollama API is accessed through WebUI's built-in proxy at `/ollama/v1` — only one ngrok tunnel needed.
+> Two separate Cloudflare tunnels: one directly to Ollama (`:11434`) for OpenAI-compatible API access, and one to WebUI (`:8081`) for browser UI and Anthropic Messages API.
 
 ---
 
-## Important Notes
+## Colab Environment
 
-- **GPU:** Colab free tier provides a T4/NVIDIA GPU. If quota runs out, you can use CPU runtime (slow).
-- **Session:** Colab disconnects after ~90 minutes of idle. Re-run Cells 2→3+4 after reconnecting.
-- **Security:** The tunnel URL is **public**. Anyone with the URL can access your Ollama API. Keep it private.
-- **ngrok Auth:** ngrok free tier requires signing up at [dashboard.ngrok.com](https://dashboard.ngrok.com/signup) for an auth token. It's free.
+- **GPU:** Colab free tier provides a T4/NVIDIA GPU. If quota runs out, you can use CPU runtime (slower).
+- **Session:** Colab disconnects after ~90 minutes of idle. Just re-run Cell 2 → Cell 3 after reconnecting.
+- **Security:** Both tunnel URLs are **public**. Anyone with the URLs can access your Ollama API. Keep them private.
 - **Cost:** Colab free tier is sufficient. Colab Pro/Pro+ gives priority GPU access & V100/A100.
 
 ---
@@ -151,9 +187,9 @@ Edit the `MODEL` variable in Cell 2 to switch models.
 |-------|----------|
 | `fuser: command not found` | Already fixed — falls back to `lsof` or `ss` |
 | Model download fails | Try a smaller model, or restart the session |
-| WebUI inaccessible | Make sure Cell 3+4 is running, check the ngrok URL |
-| opencode connection refused | ngrok tunnel must be active, endpoint includes `/ollama/v1` |
-| ngrok auth error | Sign up at dashboard.ngrok.com and paste your auth token when prompted |
+| WebUI inaccessible | Make sure Cell 3 is running, check the WebUI tunnel URL |
+| opencode connection refused | Ollama tunnel must be active, copy the URL from Cell 3 output |
+| Tunnel fails to start | Cloudflare trycloudflare may be rate-limited; wait a few minutes and retry |
 | Drive not mounted | Grant Drive access when prompted |
 
 ---
@@ -162,6 +198,6 @@ Edit the `MODEL` variable in Cell 2 to switch models.
 
 - [Ollama](https://ollama.com)
 - [Open WebUI](https://github.com/open-webui/open-webui)
-- [ngrok](https://ngrok.com)
+- [cloudflared](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/)
 - [Google Colab](https://colab.research.google.com)
 - [opencode](https://opencode.ai)
